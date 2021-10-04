@@ -1,0 +1,9 @@
+
+.DS_Store
+
+# Ignoring files and directories according to http://microchip.wikidot.com/faq:72
+**/*.X/build/
+**/*.X/dist/
+**/*.X/nbproject/Makefile-*
+**/*.X/nbproject/Package-*
+**/*.X/nbproject/private/
