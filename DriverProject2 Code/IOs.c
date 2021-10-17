@@ -1,8 +1,31 @@
 #include <xc.h>
 
+// All defined values are for use with the alternate code implementation
+
+#define BUTTON1_PRESSED    (0b00000001)
+#define BUTTON2_PRESSED    (0b00000010)
+#define BUTTON3_PRESSED    (0b00000100)
+#define BUTTON1_2PRESSED   (0b00000011)
+#define BUTTON1_3PRESSED   (0b00000101)
+#define BUTTON2_3PRESSED   (0b00000110)
+#define BUTTON1_2_3PRESSED (0b00000111)
+
 void IOinit(); //Function prototype of IOinit()
 void IOcheck(); //Function prototype of IOcheck()
 void Delay_ms(int time_ms); //Function prototype of Delay_ms();
+
+// Alternate implementation
+void IOcheck_alt();
+void blink_LED();
+
+void blink_LED(int ms) {
+
+  LATBbits.LATB8 = 1; // Turn LED on
+  Delay_ms(ms);
+  LATBbits.LATB8 = 0;
+  Delay_ms(ms);
+
+}
 
 void IOinit(){ //This Function is responsible for initializing the appropriate IO ports
     
@@ -14,6 +37,69 @@ void IOinit(){ //This Function is responsible for initializing the appropriate I
     CNPU1bits.CN1PUE = 1; // Pull CN1 - RB4 Up (PU pushbutton2 active low)
     CNPU2bits.CN23PUE = 1; // Pull CN23 - RB7 Up (PU pushbutton3 active low)
 }
+
+void IOcheck_alt(){
+
+  uint8_t button1_pressed = 0b00000000;
+  uint8_t button2_pressed = 0b00000000;
+  uint8_t button3_pressed = 0b00000000;
+
+  uint8_t buttons_pressed = 0b00000000;
+
+  int period1 = 1000; // Period in ms
+  int period2 = 2000;
+  int period3 = 3000;
+
+while(1)
+  {
+
+  uint16_t button1 = PORTAbits.RA4 ;
+  uint16_t button2 = PORTBbits.RB4 ;
+  uint16_t button3 = PORTBbits.RB7 ;
+
+
+
+  if (button1 == 0) { // If pushbutton 1 is pressed (active low)
+    button1_pressed = BUTTON1_PRESSED;
+  }
+  else if (button2 == 0) {
+    button2_pressed = BUTTON2_PRESSED;
+  }
+  else if (button3 == 0){
+    button3_pressed = BUTTON3_PRESSED;
+  }
+
+  buttons_pressed = button1 | button2 | button3;
+
+    switch(buttons_pressed)
+    {
+      case (BUTTON1_PRESSED):
+        blink_LED(period1);
+        break;
+      case(BUTTON2_PRESSED):
+        blink_LED(period2);
+        break;
+      case(BUTTON3_PRESSED):
+        blink_LED(period3);
+        break;
+      case(BUTTON1_2PRESSED):
+        blink_LED(period1 + period2);
+        break;
+      case(BUTTON1_3PRESSED):
+        blink_LED(period1 + period3);
+        break;
+      case(BUTTON2_3PRESSED):
+        blink_LED(period2 + period3);
+        break;
+      case(BUTTON1_2_3PRESSED):
+        blink_LED(period1 + period2 + period3);
+        break;
+      default:
+        LATBbits.LATB8 = 0;
+    }
+  }
+}
+
 
 void IOcheck(){  
     /*
