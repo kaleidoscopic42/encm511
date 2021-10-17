@@ -52,6 +52,7 @@
 
 void IOinit(); //Function prototype of IOinit()
 void IOcheck(); //Function prototype of IOcheck()
+void IOcheck_alt();
 
 int main(void){ 
     //main() calls the functions IOinit() and IOcheck()
@@ -60,6 +61,7 @@ int main(void){
     
     while(1){
         IOcheck();
+       // IOcheck_alt();
     }
     
     return 0;
