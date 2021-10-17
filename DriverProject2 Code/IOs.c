@@ -53,7 +53,7 @@ void IOcheck_alt(){
 while(1)
   {
 
-  uint16_t button1 = PORTAbits.RA4 ;
+  uint16_t button1 = PORTAbits.RA4 ; // Values read into variables to avoid reading while checking conditions in if statements
   uint16_t button2 = PORTBbits.RB4 ;
   uint16_t button3 = PORTBbits.RB7 ;
 
@@ -62,14 +62,23 @@ while(1)
   if (button1 == 0) { // If pushbutton 1 is pressed (active low)
     button1_pressed = BUTTON1_PRESSED;
   }
-  else if (button2 == 0) {
+  else {
+    button1_pressed = 0;
+  }
+  if (button2 == 0) {
     button2_pressed = BUTTON2_PRESSED;
   }
-  else if (button3 == 0){
+  else {
+    button2_pressed = 0;
+  }
+  if (button3 == 0){
     button3_pressed = BUTTON3_PRESSED;
   }
+  else {
+    button3_pressed = 0;
+  }
 
-  buttons_pressed = button1 | button2 | button3;
+  buttons_pressed = button1_pressed | button2_pressed | button3_pressed;
 
     switch(buttons_pressed)
     {
