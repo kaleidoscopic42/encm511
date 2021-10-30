@@ -110,11 +110,6 @@ void __attribute__ ((interrupt, no_auto_psv)) _CNInterrupt (void)
 
     IFS1bits.CNIF = 0; // clear IF flag
 
-    while(IFS1bits.CNIF == 0)
-    {
-        IOcheck();
-    }
-
     Nop();
 
     return;
