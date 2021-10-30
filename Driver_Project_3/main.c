@@ -57,6 +57,10 @@ int main(void){
     //main() calls the functions IOinit() and IOcheck()
 
     IOinit();
+    
+    while(1) {
+        IOcheck();
+    }
 
     return 0;
 }
