@@ -40,8 +40,8 @@ void Delay_ms(int time_ms){
     // 4000000/256 = 15,625 clock ticks per second after prescaling
     // 1/4000000 = 25 microseconds per clock tick
     
-   PR2 = (time_ms)/(1000 * 0.00000025 *2* 256); //Calculates the value required for PR2 according to the argument timer_ms provided
-   
+   //PR2 = (time_ms)/(1000 * 0.00000025 *2* 256); //Calculates the value required for PR2 according to the argument timer_ms provided
+   PR2 = time_ms/0.064;
 
     //PR2 = (time_ms/1000)*15625;
     TMR2 = 0; //Clear the TMR2 register before running timer2
