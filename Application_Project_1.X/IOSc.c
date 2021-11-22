@@ -2,7 +2,7 @@
 
 // Binary values named based on buttons to be used for state machine
 
-#define NO_BUTTON_PRESSED (0b00000000)  // Case of no PB pressed
+#define NO_BUTTON_PRESSED  (0b00000000)  // Case of no PB pressed
 #define BUTTON1_PRESSED    (0b00000001) // Case of PB1 pressed corresponds to 1 in bit 0
 #define BUTTON2_PRESSED    (0b00000010) // Case of PB2 pressed corresponds to 1 in bit 1
 #define BUTTON3_PRESSED    (0b00000100) // Case of PB3 pressed corresponds to 1 in bit 2
