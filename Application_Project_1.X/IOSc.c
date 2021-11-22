@@ -122,6 +122,7 @@ void IOcheck(){                 // This function is responsible for checking whi
           if(!PORTBbits.RB7){
               mode = 0;
               message = "";
+              LATBbits.LATB8 = 0;
               minutes = 0;
               seconds = 0;
             }
