@@ -27,7 +27,6 @@ char* message = " ";
 int minutes = 0;
 int seconds = 0;
 int mode = 0;
-int longpress = 0;
 
 
 void IOinit(); //Function prototype of IOinit()
@@ -154,8 +153,6 @@ void IOcheck(){                 // This function is responsible for checking whi
               LATBbits.LATB8 = 1;
             }
           }
-
-          
           
     }
  
