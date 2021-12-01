@@ -26,6 +26,9 @@ void IOinit(){ //This Function is responsible for initializing the appropriate I
 
 void __attribute__ ((interrupt, no_auto_psv)) _CNInterrupt (void) // ISR triggered by buttons 
 {
+    
+    if(check_active()) {return;}
+    
     IFS1bits.CNIF = 0; // clear IF flag
     
     int buttonA2 = PORTAbits.RA2; // Read state of PB1

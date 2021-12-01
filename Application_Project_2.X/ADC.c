@@ -7,6 +7,7 @@
 
 #include "xc.h"
 #include "UART2.h"
+#include <stdio.h>
 
 void Delay_ms();
 
@@ -62,96 +63,105 @@ void ADCinit(void) {
 }
 
 // Prints a bar with length that is proportional to analog voltage as well as hex value of analog voltage
-void print_hex(uint16_t value) {
+//void print_hex(uint16_t value) {
+//    
+//    // Minimum one box is printed (for V = 0) and maximum 64 boxes (for V = VDD);
+//    uint16_t num_of_boxes = value/16+1;
+//    int i;
+//    for(i = 0; i < num_of_boxes; ++i) {
+//        Disp2String("#");
+//    }
+//    
+//    // Display the hex value
+//    Disp2String(" ");
+//    Disp2Hex(value);
+//    
+//    // Go to next line
+//    XmitUART2('\n', 1);
+//    XmitUART2('\r', 1);
+//    
+//}
+
+uint16_t get_ADC_measurement(int port) {
     
-    // Minimum one box is printed (for V = 0) and maximum 64 boxes (for V = VDD);
-    uint16_t num_of_boxes = value/16+1;
-    int i;
-    for(i = 0; i < num_of_boxes; ++i) {
-        Disp2String("#");
+    AD1CHSbits.CH0SA = port;
+    
+    // Clear interrupt flag
+    IFS0bits.AD1IF = 0;
+    
+    // Wait until sampling is done
+    while(!IFS0bits.AD1IF) {};
+    
+    return ADC1BUF0;
+ 
+}
+
+// Returns an average of 500 samples taken 1ms apart
+uint16_t get_average(int port) {
+    
+    active_flag = 1;
+    
+    double average = 0;
+    int counter;
+    for(counter = 0; counter < 500; ++counter) {
+        average += get_ADC_measurement(port) * 0.002;
     }
     
-    // Display the hex value
-    Disp2String(" ");
-    Disp2Hex(value);
+    active_flag = 0;
     
-    // Go to next line
-    XmitUART2('\n', 1);
-    XmitUART2('\r', 1);
-    
+    return average;
 }
 
-
-// Performs a single ADC measurement on AN5
+// Performs a single ADC measurement on AN5 (for voltage))
 uint16_t get_AN5_measurement(void) {
     
-    AD1CHSbits.CH0SA = 0b00101;
+    int avg_measurement = get_average(0b00101);
     
-    // Clear interrupt flag
-    IFS0bits.AD1IF = 0;
-    
-    // Wait until sampling is done
-    while(!IFS0bits.AD1IF) {};
-    
-    Disp2String("AN5 Measurement: ");
-    Disp2Dec(ADC1BUF0);
+    Disp2String("Voltage Measurement: ");
+    float voltage_conversion = avg_measurement*(3.3)/1024;
+    char str_voltage[10];
+    sprintf(str_voltage, "%.2f", voltage_conversion);
+    Disp2String(str_voltage);
+    Disp2String(" V");
     
     XmitUART2('\n', 1);
     XmitUART2('\r', 1);
-
-    return ADC1BUF0;
+   
+    return avg_measurement;
     
 }
 
-// Performs a single ADC measurement on AN11
+// Performs a single ADC measurement on AN11 (for resistance))
 uint16_t get_AN11_measurement(void) {
     
-    AD1CHSbits.CH0SA = 0b01011;
-    
-    // Clear interrupt flag
-    IFS0bits.AD1IF = 0;
-    
-    // Wait until sampling is done
-    while(!IFS0bits.AD1IF) {};
+    int avg_measurement = get_average(0b01011);
     
     // The maximum resistance we can measure with 16 bits is 65535 ohms
     // To account for noise or other error measurements, we'll set our own maximum to 41667 ohms
-    // TODO: We'll need to average values before we can measure resistance (probably?)
-    if(ADC1BUF0 > 1000) {
-        Disp2String("Maximum allowed resistance exceeded: ");
+    if(avg_measurement > 1000) {
+        Disp2String("Maximum allowed resistance exceeded");
         XmitUART2('\n', 1);
         XmitUART2('\r', 1);
     } else {
         // Can only hold 16 bits, so needs to be divided by 16, then multiplied at the end
-        int divided_resistance = ADC1BUF0 * (900 / 16) / (1024 - ADC1BUF0);
+        int divided_resistance = avg_measurement * (900 / 16) / (1024 - avg_measurement);
 
         int actual_resistance = divided_resistance * 16;
 
         Disp2String("Resistance Measurement: ");
         Disp2Dec(actual_resistance);
+        Disp2String(" Ohm");
 
         XmitUART2('\n', 1);
         XmitUART2('\r', 1);
     }
 
-    return ADC1BUF0;
+    return avg_measurement;
     
 }
 
 // ---[ This part of the code is not being used for this project ]---
 
-//// Returns an average of 1000 samples taken 1ms apart
-//uint16_t get_average(void) {
-//    
-//    double average = 0;
-//    int counter;
-//    for(counter = 0; counter < 1000; ++counter) {
-//        average += get_measurement() * 0.001;
-//    }
-//    
-//    return average;
-//}
-//
 //// Prints 10 averages taken over 1 second intervals
 //uint16_t do_ADC(void) {
 //    
@@ -173,10 +183,11 @@ uint16_t get_AN11_measurement(void) {
 //    Idle();
 //}
 //
-//// Function to check if do_ADC is currently operating
-//int check_active() {
-//    return active_flag;
-//}
+
+// Function to check if do_ADC is currently operating
+int check_active() {
+    return active_flag;
+}
 
 void __attribute__((interrupt, no_auto_psv)) _ADC1Interrupt (void) {
     IFS0bits.AD1IF = 0; //  Clear the ADC1 interrupt flag
