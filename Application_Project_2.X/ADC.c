@@ -97,7 +97,7 @@ uint16_t get_ADC_measurement(int port) {
 }
 
 // Returns an average of 500 samples taken 1ms apart
-uint16_t get_average(int port) {
+float get_average(int port) {
     
     active_flag = 1;
     
@@ -115,7 +115,7 @@ uint16_t get_average(int port) {
 // Performs a single ADC measurement on AN5 (for voltage))
 uint16_t get_AN5_measurement(void) {
     
-    int avg_measurement = get_average(0b00101);
+    float avg_measurement = get_average(0b00101);
     
     Disp2String("Voltage Measurement: ");
     float voltage_conversion = avg_measurement*(3.3)/1024;
@@ -134,7 +134,7 @@ uint16_t get_AN5_measurement(void) {
 // Performs a single ADC measurement on AN11 (for resistance))
 uint16_t get_AN11_measurement(void) {
     
-    int avg_measurement = get_average(0b01011);
+    float avg_measurement = get_average(0b01011);
     
     // The maximum resistance we can measure with 16 bits is 65535 ohms
     // To account for noise or other error measurements, we'll set our own maximum to 41667 ohms
@@ -144,7 +144,7 @@ uint16_t get_AN11_measurement(void) {
         XmitUART2('\r', 1);
     } else {
         // Can only hold 16 bits, so needs to be divided by 16, then multiplied at the end
-        int divided_resistance = avg_measurement * (900 / 16) / (1024 - avg_measurement);
+        int divided_resistance = avg_measurement * (975 / 16) / (1024 - avg_measurement);
 
         int actual_resistance = divided_resistance * 16;
 
