@@ -80,7 +80,7 @@ int main(void){
 
     // Infinite while loop to make program run infinitely
     while(1){
-        Disp2Dec(CTMUcalibrate());
+        CTMUMeasurement();
     }
 
     return 0;
