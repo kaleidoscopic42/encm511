@@ -75,12 +75,10 @@ int main(void){
 //    Disp2String("Start");
 //    XmitUART2('\n', 1);
 //    XmitUART2('\r', 1);
-    
-    
 
     // Infinite while loop to make program run infinitely
     while(1){
-        CTMUMeasurement();
+        Disp2Dec(measureFrequency());
     }
 
     return 0;
