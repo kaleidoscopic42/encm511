@@ -67,17 +67,21 @@ int main(void){
     REFOCONbits.RODIV = 0b1111; // ~ 250Hz
     REFOCONbits.ROEN = 1;       // Reference oscillator is enabled
     
-    // Initialize the ADC module and the push button
-    ADCinit();
-    IOinit();
+//    // Initialize the ADC module and the push button
+//    ADCinit();
+//    IOinit();
+//    
+//    // Print message to show that program has started
+//    Disp2String("Start");
+//    XmitUART2('\n', 1);
+//    XmitUART2('\r', 1);
     
-    // Print message to show that program has started
-    Disp2String("Start");
-    XmitUART2('\n', 1);
-    XmitUART2('\r', 1);
+    
 
     // Infinite while loop to make program run infinitely
-    while(1){}
+    while(1){
+        Disp2Dec(CTMUcalibrate());
+    }
 
     return 0;
 }
