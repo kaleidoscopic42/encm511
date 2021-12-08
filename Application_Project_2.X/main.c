@@ -79,8 +79,7 @@ int main(void){
     Disp2String("Start");
     // Infinite while loop to make program run infinitely
     while(1){
-        Disp2String("Working");
-        //Disp2Dec(measureCapacitance());
+        Disp2Dec(measureCapacitance());
     }
 
     return 0;

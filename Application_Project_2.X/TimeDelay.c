@@ -53,7 +53,7 @@ void Delay_ms(int time_ms){
 
 }
 
-void __attribute__((__interrupt__, __shadow__)) _T1Interrupt(void) {
-    IFS0bits.T1IF = 0;     //Reset Timer1 interrupt flag and Return from ISR}
+void __attribute__((__interrupt__, __shadow__)) _T2Interrupt(void) {
+    IFS0bits.T2IF = 0;     //Reset Timer1 interrupt flag and Return from ISR}
 }
 
