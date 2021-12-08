@@ -1,25 +1,24 @@
 #include "xc.h"
 
-int timerActive = 0;
 int eventCount = 0;
 
-void ComparatorInit(void) {
+void Comparator2Init(void) {
     
-    IEC1bits.CMIE = 0;      // Disable interrupts while setting up pin
+    IEC1bits.CMIE = 0;          // Disable interrupts while setting up pin
     
-    TRISAbits.TRISA2 = 1; 	// A2 set as input on port pin
-    AD1PCFGbits.PCFG4 = 0; 	// Set input to Analog
-    IEC1bits.CMIE = 0; 		// IE Off so no interrupt occurs from setup
-    CM1CONbits.COE = 0; 	// Disable output pin
-    CM1CONbits.CPOL = 0; 	// Standard sense. +In High ==> Out High
-    CM1CONbits.EVPOL = 2; 	// Event detected on output edge falling
-    CM1CONbits.CREF = 1; 	// +IN is internal CVRef
-    CM1CONbits.CCH = 0; 	// -IN is C1INB Pin
+    TRISAbits.TRISA2 = 1;       // A2 set as input on port pin
+    AD1PCFGbits.PCFG2 = 0;   	// Set input to Analog
+    IEC1bits.CMIE = 0;          // IE Off so no interrupt occurs from setup
+    CM2CONbits.COE = 0;         // Disable output pin
+    CM2CONbits.CPOL = 0;        // Standard sense. +In High ==> Out High
+    CM2CONbits.EVPOL = 2;       // Event detected on output edge falling
+    CM2CONbits.CREF = 1;        // +IN is internal CVRef
+    CM2CONbits.CCH = 0b10;      // -IN is C1IND Pin
     
-    CVRCON = 0x88; 		// CVRef = (1/2) * (AVdd - AVss)
+    CVRCON = 0x88;              // CVRef = (1/2) * (AVdd - AVss)
     
-    CM1CONbits.CEVT = 0;    // Clear comparator event bit
-    IFS1bits.CMIF = 0; 		// Clear IF after set-up
+    CM2CONbits.CEVT = 0;        // Clear comparator event bit
+    IFS1bits.CMIF = 0;          // Clear IF after set-up
        
     IEC1bits.CMIE = 1; 
     
@@ -70,9 +69,4 @@ void __attribute__((interrupt, no_auto_psv)) _CompInterrupt(void) {
         
     return;
     
-}
-
-void __attribute__((__interrupt__, __shadow__)) _T1Interrupt(void) {
-    IFS0bits.T1IF = 0;     //Reset Timer1 interrupt flag and Return from ISR}
-    timerActive = 1;
 }

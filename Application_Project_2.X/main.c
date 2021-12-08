@@ -76,21 +76,12 @@ int main(void){
 //    XmitUART2('\n', 1);
 //    XmitUART2('\r', 1);
 
+    Disp2String("Start");
     // Infinite while loop to make program run infinitely
     while(1){
-        Disp2Dec(measureFrequency());
+        Disp2String("Working");
+        //Disp2Dec(measureCapacitance());
     }
 
     return 0;
-}
-
-void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void) // ISR for Timer2
-{
-    /*
-     * Called by the microprocessor automatically when timer2 triggers an interrupt.
-     * All this does in this project is clear the timer2 interrupt flag
-     */
-     IFS0bits.T2IF = 0; //Clears timer2 interrupt flag
-
-     return;
 }

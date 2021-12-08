@@ -52,3 +52,8 @@ void Delay_ms(int time_ms){
     TMR2 = 0; //Clear timer2 before exiting
 
 }
+
+void __attribute__((__interrupt__, __shadow__)) _T1Interrupt(void) {
+    IFS0bits.T1IF = 0;     //Reset Timer1 interrupt flag and Return from ISR}
+}
+
