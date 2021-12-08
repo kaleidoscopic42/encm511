@@ -8,7 +8,7 @@ void comparatorGo(void);
 int timerActive;
 int eventCount2;
 
-void measureCapactitance(void){
+void measureCapacitance(void){
   
   TimerInit();
   ComparatorInit();
