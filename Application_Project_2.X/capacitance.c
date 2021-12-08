@@ -20,7 +20,7 @@ void measureCapactitance(void){
     
     while(!timerActive){};
     
-    unsigned float capacitance = ( (CMSTATbits.C1OUT) * (1/eventCount2) ) / [Voltage Reading])
+    unsigned float capacitance = ( (CMSTATbits.C1OUT) * (1/eventCount2) ) / [Voltage Reading]);
       
     return capacitance;
 }
