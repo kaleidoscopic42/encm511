@@ -19,8 +19,8 @@ void ComparatorInit(void) {
     TRISAbits.TRISA2 = 1;       // A2 set as input on port pin
     AD1PCFGbits.PCFG4 = 0;   	// Set input to Analog
     CM2CONbits.COE = 0;         // Disable output pin
-    CM2CONbits.CPOL = 0;        // Standard sense. +In High ==> Out High
-    CM2CONbits.EVPOL = 2;       // Event detected on output edge falling
+    CM2CONbits.CPOL = 1;        // Standard sense. +In High ==> Out High
+    CM2CONbits.EVPOL = 3;       // Event detected on output edge falling
     CM2CONbits.CREF = 1;        // +IN is internal CVRef
     CM2CONbits.CCH = 0b10;      // -IN is C2IND Pin
     
@@ -65,41 +65,28 @@ int measureFrequency(void) {
 
 int measureCapacitance(void) {
     
-    Disp2String("Hello6");
     TimerInit();
     ComparatorInit();
     
-    Disp2String("Hello5");
-    
-    TRISAbits.TRISA2 = 0;   // Configure as 
-    Disp2String("Hello51");
+    TRISAbits.TRISA2 = 0;   // Configure as input
     PORTAbits.RA2 = 0;      // Set RA2 to low to allow capacitor to discharge
-    Disp2String("Hello52");
     Delay_ms(1000);         // Wait one second to allow capacitor to fully discharge
-    Disp2String("Hello53");
-    
-    Disp2String("Hello4");
     
     TRISAbits.TRISA2 = 1;   // Configure as input
     TRISBbits.TRISB8 = 0;   // Configure as ouput
     
-    Disp2String("Hello3");
-    
     CM2CONbits.CON = 1; 	// Turn Comparator ON
     T1CONbits.TON=1;        // Turn timer ON
-    PORTBbits.RB8=1;        // Turn RB8 high (charge capacitor)
-    
-    Disp2String("Hello2");
+    PORTBbits.RB8=1;        // Turn RB8 high
     
     capacitanceReady = 0;
     
     while(!capacitanceReady){};
     
-    Disp2String("Hello1");
+    int halfTime = TMR1;
+    Disp2Dec(TMR1);
     
-    int halfTime = TMR2;
-    
-    return halfTime/(100*0.69315);
+    return ((halfTime*(1/4e6))/(100*0.69315))*10e6;
     
 }
 
