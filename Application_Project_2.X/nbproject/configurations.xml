@@ -14,7 +14,6 @@
                    projectFiles="true">
       <itemPath>ADC.c</itemPath>
       <itemPath>ADC.h</itemPath>
-      <itemPath>IOs.c</itemPath>
       <itemPath>Makefile</itemPath>
       <itemPath>TimeDelay.c</itemPath>
       <itemPath>UART2.c</itemPath>
@@ -22,6 +21,7 @@
       <itemPath>main.c</itemPath>
       <itemPath>CTMU.c</itemPath>
       <itemPath>comparator.c</itemPath>
+      <itemPath>IOSc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
