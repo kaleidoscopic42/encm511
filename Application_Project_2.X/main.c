@@ -52,6 +52,7 @@
 #include <xc.h>
 #include "UART2.h"
 #include "ADC.h"
+#include "comparator.h"
 
 void IOinit(); //Function prototype of IOinit()
 void IOcheck(); //Function prototype of IOcheck()
