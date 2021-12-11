@@ -69,7 +69,7 @@ int main(void){
     
 //    // Initialize the ADC module and the push button
 //    ADCinit();
-//    IOinit();
+    IOinit();
 //    
 //    // Print message to show that program has started
 //    Disp2String("Start");
@@ -78,7 +78,8 @@ int main(void){
 
     // Infinite while loop to make program run infinitely
     while(1){
-        Disp2Dec(measureFrequency());
+       // Disp2Dec(measureFrequency());
+        IOcheck();
     }
 
     return 0;
