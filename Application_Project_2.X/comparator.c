@@ -12,19 +12,9 @@ void ComparatorInit(void) {
     AD1PCFGbits.PCFG3 = 0; 	// Set input to Analog
     CM1CONbits.COE = 0; 	// Disable output pin
     CM1CONbits.CPOL = 0; 	// Standard sense. +In High ==> Out High
-    CM1CONbits.EVPOL = 2; 	// Event detected on output edge falling
+    CM1CONbits.EVPOL = 0b01; 	// Event detected on output edge falling
     CM1CONbits.CREF = 1; 	// +IN is internal CVRef
     CM1CONbits.CCH = 0b01; 	// -IN is C1INC Pin
-    
-    TRISAbits.TRISA2 = 1;       // A2 set as input on port pin
-    AD1PCFGbits.PCFG4 = 0;   	// Set input to Analog
-    CM2CONbits.COE = 0;         // Disable output pin
-    CM2CONbits.CPOL = 1;        // Standard sense. +In High ==> Out High
-    CM2CONbits.EVPOL = 3;       // Event detected on output edge falling
-    CM2CONbits.CREF = 1;        // +IN is internal CVRef
-    CM2CONbits.CCH = 0b10;      // -IN is C2IND Pin
-    
-    CM2CONbits.CEVT = 0;        // Clear comparator event bit
     
     CVRCON = 0x0088; 		// CVRef = (1/2) * (AVdd - AVss)
     
@@ -68,14 +58,14 @@ void measureCapacitance(void) {
     TimerInit();
     ComparatorInit();
     
-    TRISAbits.TRISA2 = 0;   // Configure as input
-    PORTAbits.RA2 = 0;      // Set RA2 to low to allow capacitor to discharge
+    TRISBbits.TRISB1 = 0;   // Configure as output
+    PORTBbits.RB1 = 0;      // Set RB1 to low to allow capacitor to discharge
     Delay_ms(1000);         // Wait one second to allow capacitor to fully discharge
     
-    TRISAbits.TRISA2 = 1;   // Configure as input
+    TRISBbits.TRISB1 = 1;   // Configure as input
     TRISBbits.TRISB8 = 0;   // Configure as ouput
     
-    CM2CONbits.CON = 1; 	// Turn Comparator ON
+    CM1CONbits.CON = 1; 	// Turn Comparator ON
     T1CONbits.TON=1;        // Turn timer ON
     PORTBbits.RB8=1;        // Turn RB8 high
     
@@ -85,11 +75,9 @@ void measureCapacitance(void) {
     
     int halfTime = TMR1;
     
-    Disp2Dec(halfTime);
     Disp2String("Capacitance Measurement: ");
-    float capacitance_conversion = halfTime/51.0;
+    float capacitance_conversion = halfTime/68.0;
     if(capacitance_conversion < 0) capacitance_conversion *= -1.0;
-    Disp2Dec(capacitance_conversion);
     char str_capacitance[10];
     sprintf(str_capacitance, "%.2f", capacitance_conversion);
     Disp2String(str_capacitance);
@@ -105,13 +93,10 @@ void comparatorGo(void) {
 
     if (CM1CONbits.CEVT == 1) {
         eventCount++; 		// Count edges for whoever uses them
+        capacitanceReady = 1;
         CM1CONbits.CEVT = 0;
     }
-    
-    if (CM2CONbits.CEVT == 1) {
-        capacitanceReady = 1;
-        CM2CONbits.CEVT = 0;
-    }
+   
 }
 
 void __attribute__((interrupt, no_auto_psv)) _CompInterrupt(void) {
