@@ -19,9 +19,9 @@ void ComparatorInit(void) {
     CVRCON = 0x0088; 		// CVRef = (1/2) * (AVdd - AVss)
     
     CM1CONbits.CEVT = 0;    // Clear comparator event bit
-    IFS1bits.CMIF = 0; 		// Clear IF after set-up
+    IFS1bits.CMIF = 0; 	    // Clear IF after set-up
        
-    IEC1bits.CMIE = 1; 
+    IEC1bits.CMIE = 1; 	    // Enable comparator interrupt
     
 }
 
@@ -41,29 +41,29 @@ void TimerInit(void) {
 }
 
 void measureFrequency(void) {
-    TimerInit();
-    ComparatorInit();
+    TimerInit();		// Initialize timer
+    ComparatorInit();		// Initialize comparator
     CM1CONbits.CON = 1; 	// Turn Comparator ON
     T1CONbits.TON=1;
     
     eventCount = 0;
     
-    timerActive = 0;
+    timerActive = 0;	// Start timer
     
-    while(!timerActive){};
+    while(!timerActive){}; // Wait until timer is finished
     
-    Disp2String("Frequency Measurement: ");
+    Disp2String("Frequency Measurement: "); // Display frequency	
     Disp2Dec(eventCount);
     Disp2String("Hz");
     
-    XmitUART2('\n', 1);
+    XmitUART2('\n', 1);	// Return on newline
     XmitUART2('\r', 1);
 }
 
 void measureCapacitance(void) {
     
-    TimerInit();
-    ComparatorInit();
+    TimerInit();	// Initialize timer
+    ComparatorInit();	// Initialize comparator
     
     TRISBbits.TRISB1 = 0;   // Configure as output
     PORTBbits.RB1 = 0;      // Set RB1 to low to allow capacitor to discharge
@@ -72,25 +72,25 @@ void measureCapacitance(void) {
     TRISBbits.TRISB1 = 1;   // Configure as input
     TRISBbits.TRISB8 = 0;   // Configure as ouput
     
-    CM1CONbits.CON = 1; 	// Turn Comparator ON
+    CM1CONbits.CON = 1;     // Turn Comparator ON
     T1CONbits.TON=1;        // Turn timer ON
     PORTBbits.RB8=1;        // Turn RB8 high
     
-    capacitanceReady = 0;
+    capacitanceReady = 0;  // Capacitance measurement not ready
     
-    while(!capacitanceReady){};
+    while(!capacitanceReady){}; // Wait until capacitance measurement is ready
     
-    int halfTime = TMR1;
+    int halfTime = TMR1;   // Known halftime used for capacitance calulation
     
     Disp2String("Capacitance Measurement: ");
-    float capacitance_conversion = halfTime/68.0;
-    if(capacitance_conversion < 0) capacitance_conversion *= -1.0;
+    float capacitance_conversion = halfTime/68.0; // Calculate capacitance based on known capacitance and time interval
+    if(capacitance_conversion < 0) capacitance_conversion *= -1.0;	// Ensure no negative values
     char str_capacitance[10];
-    sprintf(str_capacitance, "%.2f", capacitance_conversion);
-    Disp2String(str_capacitance);
+    sprintf(str_capacitance, "%.2f", capacitance_conversion);	// Format as string
+    Disp2String(str_capacitance);	// Display capacitance
     Disp2String(" uF");
     
-    XmitUART2('\n', 1);
+    XmitUART2('\n', 1);	// Return on newline
     XmitUART2('\r', 1);
     
 }
@@ -100,15 +100,15 @@ void comparatorGo(void) {
 
     if (CM1CONbits.CEVT == 1) {
         eventCount++; 		// Count edges for whoever uses them
-        capacitanceReady = 1;
+        capacitanceReady = 1;	// Capcitance measurement is ready
         CM1CONbits.CEVT = 0;
     }
    
 }
 
-void __attribute__((interrupt, no_auto_psv)) _CompInterrupt(void) {
+void __attribute__((interrupt, no_auto_psv)) _CompInterrupt(void) { // Comparator Interrupt Service Routine
     
-    comparatorGo();
+    comparatorGo();		// Start comparator
     
 	IFS1bits.CMIF = 0;		// clear IF flag
         
@@ -117,6 +117,6 @@ void __attribute__((interrupt, no_auto_psv)) _CompInterrupt(void) {
 }
 
 void __attribute__((__interrupt__, __shadow__)) _T1Interrupt(void) {
-    IFS0bits.T1IF = 0;     //Reset Timer1 interrupt flag and Return from ISR}
-    timerActive = 1;
+    IFS0bits.T1IF = 0;     // Reset Timer1 interrupt flag and Return from ISR}
+    timerActive = 1;	   // Timer1 is done
 }
