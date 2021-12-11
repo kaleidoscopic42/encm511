@@ -45,11 +45,12 @@ int measureFrequency(void) {
     eventCount = 0;
     CM1CONbits.CON = 1; 	// Turn Comparator ON
     T1CONbits.TON=1;
-    
+
+} 
     timerActive = 0;
-    
+
     while(!timerActive){};
-    
+
     return eventCount;
 }
 
