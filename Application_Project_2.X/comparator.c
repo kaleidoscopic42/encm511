@@ -26,7 +26,7 @@ void ComparatorInit(void) {
     
     CM2CONbits.CEVT = 0;        // Clear comparator event bit
     
-    CVRCON = 0x88; 		// CVRef = (1/2) * (AVdd - AVss)
+    CVRCON = 0x0088; 		// CVRef = (1/2) * (AVdd - AVss)
     
     CM1CONbits.CEVT = 0;    // Clear comparator event bit
     IFS1bits.CMIF = 0; 		// Clear IF after set-up
@@ -63,7 +63,7 @@ int measureFrequency(void) {
     return eventCount;
 }
 
-int measureCapacitance(void) {
+void measureCapacitance(void) {
     
     TimerInit();
     ComparatorInit();
@@ -84,9 +84,19 @@ int measureCapacitance(void) {
     while(!capacitanceReady){};
     
     int halfTime = TMR1;
-    Disp2Dec(TMR1);
     
-    return ((halfTime*(1/4e6))/(100*0.69315))*10e6;
+    Disp2Dec(halfTime);
+    Disp2String("Capacitance Measurement: ");
+    float capacitance_conversion = halfTime/69.0;
+    if(capacitance_conversion < 0) capacitance_conversion *= -1.0;
+    Disp2Dec(capacitance_conversion);
+    char str_capacitance[10];
+    sprintf(str_capacitance, "%.2f", capacitance_conversion);
+    Disp2String(str_capacitance);
+    Disp2String(" uF");
+    
+    XmitUART2('\n', 1);
+    XmitUART2('\r', 1);
     
 }
 
