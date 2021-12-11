@@ -77,10 +77,10 @@ void __attribute__ ((interrupt, no_auto_psv)) _CNInterrupt (void) // ISR trigger
     if(PORTAbits.RA2 == buttonA2) { // If current state of PB1 is same as previous state
 
         if (PORTAbits.RA2 == buttonA2 && PORTAbits.RA2 == 0){ // If PB1 is pressed
-            CN0flag = BUTTON1_PRESSED; // user defined global variable used as flag
+            CN30flag = BUTTON1_PRESSED; // user defined global variable used as flag
         }
         else {
-            CN0flag = NO_BUTTON_PRESSED;    // If PB1 is not pressed, set flag to 0
+            CN30flag = NO_BUTTON_PRESSED;    // If PB1 is not pressed, set flag to 0
         }
     }
     if(PORTBbits.RB4 == buttonRB4 ) { // If current state of PB2 is same as previous state
@@ -96,10 +96,10 @@ void __attribute__ ((interrupt, no_auto_psv)) _CNInterrupt (void) // ISR trigger
     if(PORTAbits.RA4 == buttonRA4) { // If current state of PB3 is same as previous state
         if( PORTAbits.RA4 == buttonRA4 && PORTAbits.RA4 == 0) // If PB3 is pressed
         {
-            CN30flag = BUTTON3_PRESSED; // user defined global variable used as flag
+            CN0flag = BUTTON3_PRESSED; // user defined global variable used as flag
         }
         else {
-            CN30flag = NO_BUTTON_PRESSED;       // If PB3 is not pressed, set flag to 0
+            CN0flag = NO_BUTTON_PRESSED;       // If PB3 is not pressed, set flag to 0
 
         }
     }
