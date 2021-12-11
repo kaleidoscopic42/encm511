@@ -48,7 +48,13 @@ void IOcheck(){                 // This function is responsible for checking whi
           Disp2Dec(measureCapacitance());
         break;
       default:
-          Disp2Dec(measureFrequency());
+          int frequency = measureFrequency();
+          if(!frequency) {
+              Idle();
+          }
+          else {
+              Disp2Dec(frequency);
+          }
         // Add code here to put in doze mode when there is no frequency source
     }
 void __attribute__ ((interrupt, no_auto_psv)) _CNInterrupt (void) // ISR triggered by buttons
