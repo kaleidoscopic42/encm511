@@ -1,5 +1,6 @@
 #include <xc.h>
 #include "ADC.h"
+#include "IOSc.h"
 
 
 void Delay_ms(int time_ms); //Function prototype of Delay_ms();
