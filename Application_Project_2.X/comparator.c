@@ -87,7 +87,7 @@ void measureCapacitance(void) {
     
     Disp2Dec(halfTime);
     Disp2String("Capacitance Measurement: ");
-    float capacitance_conversion = halfTime/69.0;
+    float capacitance_conversion = halfTime/51.0;
     if(capacitance_conversion < 0) capacitance_conversion *= -1.0;
     Disp2Dec(capacitance_conversion);
     char str_capacitance[10];
