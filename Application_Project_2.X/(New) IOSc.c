@@ -47,7 +47,7 @@ void IOcheck(){                 // This function is responsible for checking whi
       case(BUTTON3_PRESSED):    // Case of PB3 being pressed
           Disp2String("Capacitance: ");
           Disp2Dec(measureCapacitance());
-          Disp2String(" F");
+          Disp2String(" uF");
         break;
       default:
           int frequency = measureFrequency();
