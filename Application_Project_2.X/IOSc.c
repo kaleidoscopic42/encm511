@@ -1,15 +1,6 @@
 #include <xc.h>
 #include "ADC.h"
-#define NO_BUTTON_PRESSED  (0b00000000)  // Case of no PB pressed
-#define BUTTON1_PRESSED    (0b00000001) // Case of PB1 pressed corresponds to 1 in bit 0
-#define BUTTON2_PRESSED    (0b00000010) // Case of PB2 pressed corresponds to 1 in bit 1
-#define BUTTON3_PRESSED    (0b00000100) // Case of PB3 pressed corresponds to 1 in bit 2
 
-uint16_t buttons_pressed = NO_BUTTON_PRESSED;
-
-uint16_t CN0flag = NO_BUTTON_PRESSED;
-uint16_t CN1flag = NO_BUTTON_PRESSED;
-uint16_t CN30flag = NO_BUTTON_PRESSED;
 
 void Delay_ms(int time_ms); //Function prototype of Delay_ms();
 
@@ -31,36 +22,26 @@ void IOinit(){ //This Function is responsible for initializing the appropriate I
     IPC4bits.CNIP = 7;      // Set CN interrupt priority
     IFS1bits.CNIF = 0;      // Clears the CN interrupt flag
     IEC1bits.CNIE = 1;      // Enable the CN interrupt (general)
-
 }
 
 void IOcheck(){                 // This function is responsible for checking which buttons are pressed, controlling the LED and displaying messages
 
     switch(buttons_pressed)     // Look at which buttons are pressed
     {
-      case (BUTTON1_PRESSED):   // Case of PB1 being pressed
-          get_AN5_measurement();
+      case (VOLT):   // If PB1 is being pressed, voltmeter mode
+          get_AN5_measurement();    // Get voltage measurement from analog input AN5 and display
         break;
-      case(BUTTON2_PRESSED):    // Case of PB2 being pressed
-          get_AN11_measurement();
+      case(OHM):    // If PB2 is being pressed, ohmmeter mode
+          get_AN11_measurement(); // Get measurement from analog input AN11, convert to ohms and display
         break;
-      case(BUTTON3_PRESSED):    // Case of PB3 being pressed
-          Disp2String("Capacitance: ");
-          Disp2Dec(measureCapacitance());
-          Disp2String(" uF");
+      case(CAP):    // If PB3 is being pressed, capacitor mode
+          measureCapacitance()); // Use comparator to find capacitance
         break;
-      default:;
-          int frequency = measureFrequency();
-          if(!frequency) {
-              Idle();
-          }
-          else {
-              Disp2String("Frequency: ");
-              Disp2Dec(frequency);
-              Disp2String(" Hz");
-          }
-        // Add code here to put in doze mode when there is no frequency source
-    }
+      case(FREQ): // If no buttons are pressed, frequency mode
+        int frequency = measureFrequency(); // Use comparator to find frequency
+          if(!frequency) {      // If frequency is zero (no frequency source)
+              Idle();           // Idle() for power saving
+     }
 }
 
     void __attribute__ ((interrupt, no_auto_psv)) _CNInterrupt (void) // ISR triggered by buttons
@@ -69,54 +50,26 @@ void IOcheck(){                 // This function is responsible for checking whi
     if(check_active()) {return;}
 
     IFS1bits.CNIF = 0; // clear IF flag
+            
+    
+    Delay_ms(10); // Debounce - wait for steady state
 
-    int buttonA2 = PORTAbits.RA2; // Read state of PB1
-    int buttonRB4 = PORTBbits.RB4; // Read state of PB2
-    int buttonRA4 = PORTAbits.RA4; // Read state of PB3
+    buttonA2  = PORTAbits.RA2; // Read state of PB1
+    buttonRB4 = PORTBbits.RB4; // Read state of PB2
+    buttonRA4 = PORTAbits.RA4; // Read state of PB3
 
-    Delay_ms(2); // Debounce - wait for steady state
-
-    if(PORTAbits.RA2 == buttonA2) { // If current state of PB1 is same as previous state
-
-        if (PORTAbits.RA2 == buttonA2 && PORTAbits.RA2 == 0){ // If PB1 is pressed
-            CN30flag = BUTTON1_PRESSED; // user defined global variable used as flag
+        if (!buttonA2 && buttonRB4 && buttonRA4){ // If PB1 is pressed
+            mode = VOLT;        // Voltmeter mode
         }
-        else {
-            CN30flag = NO_BUTTON_PRESSED;    // If PB1 is not pressed, set flag to 0
+        else if (buttonA2 && !buttonRB4 && buttonRA4) { // If PB2 is pressed
+            mode = OHM;         // Ohmmeter mode
         }
-    }
-    if(PORTBbits.RB4 == buttonRB4 ) { // If current state of PB2 is same as previous state
-
-        if( PORTBbits.RB4 == buttonRB4 && PORTBbits.RB4 == 0) // If PB2 is pressed
-        {
-            CN1flag = BUTTON2_PRESSED; // user defined global variable used as flag
+        else if(buttonA2 && buttonRB4 && !buttonRA4) { // If PB3 is pressed
+            mode = CAP;         // Capacitor mode
         }
-        else {
-            CN1flag = NO_BUTTON_PRESSED;         // If PB2 is not pressed, set flag to 0
+        else {                  // Other cases (no buttons pressed)
+            mode = FREQ;        // Frequency mode
         }
-    }
-    if(PORTAbits.RA4 == buttonRA4) { // If current state of PB3 is same as previous state
-        if( PORTAbits.RA4 == buttonRA4 && PORTAbits.RA4 == 0) // If PB3 is pressed
-        {
-            CN0flag = BUTTON3_PRESSED; // user defined global variable used as flag
-        }
-        else {
-            CN0flag = NO_BUTTON_PRESSED;       // If PB3 is not pressed, set flag to 0
-
-        }
-    }
-   buttons_pressed = CN0flag | CN1flag | CN30flag; // State variable is OR of flags for every button
-  /*  if(PORTAbits.RA2 == buttonA2 && PORTAbits.RA2 == 0) { // If current state of PB1 is same as previous state
-
-        get_AN5_measurement();
-
-    }
-
-    if(PORTBbits.RB4 == buttonRB4 && PORTBbits.RB4 == 0) { // If current state of PB2 is same as previous state
-
-        get_AN11_measurement();
-
-    }*/
 
     Nop(); // No operation
 
