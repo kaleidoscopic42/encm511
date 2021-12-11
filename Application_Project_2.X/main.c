@@ -69,7 +69,7 @@ int main(void){
     
 //    // Initialize the ADC module and the push button
 //    ADCinit();
-//    IOinit();
+    IOinit();
 //    
 //    // Print message to show that program has started
 //    Disp2String("Start");
