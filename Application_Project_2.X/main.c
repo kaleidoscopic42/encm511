@@ -80,6 +80,7 @@ int main(void){
     // Infinite while loop to make program run infinitely
     while(1){
         measureCapacitance();
+        //IOcheck();
     }
 
     return 0;

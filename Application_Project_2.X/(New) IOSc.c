@@ -45,7 +45,9 @@ void IOcheck(){                 // This function is responsible for checking whi
           get_AN11_measurement();
         break;
       case(BUTTON3_PRESSED):    // Case of PB3 being pressed
+          Disp2String("Capacitance: ");
           Disp2Dec(measureCapacitance());
+          Disp2String(" F");
         break;
       default:
           int frequency = measureFrequency();
@@ -53,7 +55,9 @@ void IOcheck(){                 // This function is responsible for checking whi
               Idle();
           }
           else {
+              Disp2String("Frequency: ");
               Disp2Dec(frequency);
+              Disp2String(" Hz");
           }
         // Add code here to put in doze mode when there is no frequency source
     }
