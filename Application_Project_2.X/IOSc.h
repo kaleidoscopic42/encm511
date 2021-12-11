@@ -1,2 +1,0 @@
-void IOInit();
-void IOcheck();
